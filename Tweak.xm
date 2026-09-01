@@ -10,24 +10,38 @@
 
 static ClickWindow *floatWindow = nil;
 static UIButton *floatButton = nil;
-static CGPoint targetPoint = {0, 0}; // 修复常量初始化报错
+static CGPoint targetPoint = {0, 0};
 
 void simulateClick(CGPoint pt) {
-    // 获取当前的主窗口（兼容 iOS 13+ 现代多场景）
+    // 适配 iOS 15+ 现代多场景窗口获取方式，消除弃用警告
     UIWindow *targetWindow = nil;
-    for (UIWindow *window in [UIApplication sharedApplication].windows) {
-        if (window.isKeyWindow) {
-            targetWindow = window;
-            break;
+    for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+        if ([scene isKindOfClass:[UIWindowScene class]]) {
+            UIWindowScene *windowScene = (UIWindowScene *)scene;
+            for (UIWindow *window in windowScene.windows) {
+                if (window.isKeyWindow) {
+                    targetWindow = window;
+                    break;
+                }
+            }
         }
+        if (targetWindow) break;
     }
     if (!targetWindow) {
-        targetWindow = [UIApplication sharedApplication].windows.firstObject;
+        for (UIScene *scene in [UIApplication sharedApplication].connectedScenes) {
+            if ([scene isKindOfClass:[UIWindowScene class]]) {
+                UIWindowScene *windowScene = (UIWindowScene *)scene;
+                targetWindow = windowScene.windows.firstObject;
+                if (targetWindow) break;
+            }
+        }
     }
     
-    UIView *hitView = [targetWindow hitTest:pt withEvent:nil];
-    if (hitView) {
-        // 后续可在此处完善触控事件分发
+    if (targetWindow) {
+        UIView *hitView = [targetWindow hitTest:pt withEvent:nil];
+        if (hitView) {
+            // 后续可在此处完善触控事件分发
+        }
     }
 }
 
