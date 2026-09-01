@@ -26,10 +26,14 @@ jobs:
       run: |
         make FINALPACKAGE=1
         mkdir -p output_dylib
-        find . -name "*.dylib" -not -path "*/.*" -exec cp {} output_dylib/ \;
         
-        # 核心修复：移除云端签名，防止 TrollFools 签名冲突
+        # 直接从 Theos 的隐藏输出目录复制 dylib
+        cp .theos/obj/*.dylib output_dylib/ 2>/dev/null || true
+        cp .theos/obj/*/*.dylib output_dylib/ 2>/dev/null || true
+        
+        # 移除云端签名，防止 TrollFools 签名冲突
         codesign --remove-signature output_dylib/*.dylib || true
+        ls -la output_dylib/
 
     - name: 上传 Dylib 产物
       uses: actions/upload-artifact@v4
