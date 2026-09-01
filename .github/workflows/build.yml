@@ -1,17 +1,33 @@
-name: Build Tweak
-on: [push, workflow_dispatch]
+name: Build Dylib
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: macos-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup Theos
-      run: git clone --recursive https://github.com/theos/theos.git $HOME/theos
-    - name: Make Package
+    - name: 检出源码
+      uses: actions/checkout@v4
+
+    - name: 安装 Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+
+    - name: 编译生成 Dylib
       env:
         THEOS: /Users/runner/theos
-      run: make package
-    - uses: actions/upload-artifact@v4
+      run: |
+        make FINALPACKAGE=1
+        mkdir -p output_dylib
+        # 自动搜寻并复制编译出来的 dylib 文件到统一目录
+        find .theos/obj -name "*.dylib" -exec cp {} output_dylib/ \;
+
+    - name: 上传 Dylib 产物
+      uses: actions/upload-artifact@v4
       with:
-        name: package-deb
-        path: packages/*.deb
+        name: CustomAutoClicker-dylib
+        path: output_dylib/*
