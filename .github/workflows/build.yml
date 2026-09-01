@@ -1,3 +1,4 @@
+
 name: Build Dylib
 
 on:
@@ -12,7 +13,10 @@ jobs:
     steps:
     - name: 检出源码
       uses: actions/checkout@v4
-
+      
+    - name: 安装打包依赖 (ldid)
+      run: brew install ldid dpkg
+      
     - name: 安装 Theos
       run: |
         git clone --recursive https://github.com/theos/theos.git $HOME/theos
