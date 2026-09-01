@@ -1,0 +1,9 @@
+package: com.developer.customautoclicker
+name: CustomAutoClicker
+depends: mobilesubstrate, firmware (>= 15.0)
+version: 1.0.0
+architecture: iphoneos-arm64
+maintainer: Developer
+description: Custom iOS Auto Clicker with Timer and Coordinate Picker.
+author: Developer
+section: Tweaks
