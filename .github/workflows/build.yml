@@ -1,0 +1,17 @@
+name: Build Tweak
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Theos
+      run: git clone --recursive https://github.com/theos/theos.git $HOME/theos
+    - name: Make Package
+      env:
+        THEOS: /Users/runner/theos
+      run: make package
+    - uses: actions/upload-artifact@v4
+      with:
+        name: package-deb
+        path: packages/*.deb
